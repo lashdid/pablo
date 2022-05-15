@@ -1,34 +1,20 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# PABLO
+A simple social media without someone controlling you.
 
-## Getting Started
+### What does that mean?
+This means that if you post here, your post will never be deleted ( maybe ). You can post anything here for absolutely free, because its for community.
 
-First, run the development server:
+*if someone is interested with this thing.*
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+I just relised that what i made is exactly like 4chan.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Is it dangerous?
+Well, it depends.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+### How to sign in?
+<img src="https://en.meming.world/images/en/0/03/Good_Question.jpg" width="350" height="200">
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+This is why i said its exactly like 4chan. Its anonymous.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### Why i made this?
+To learn how to use NextJS and Mantine UI.
