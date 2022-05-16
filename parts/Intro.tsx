@@ -31,7 +31,7 @@ export default function Intro() {
         </Text>
       </Title>
       <Divider my="xs" />
-      <Text>Here you can post anything and everything.</Text>
+      <Text>Here you can post almost anything.</Text>
       <List>
         <List.Item>Poll</List.Item>
         <List.Item>Video</List.Item>

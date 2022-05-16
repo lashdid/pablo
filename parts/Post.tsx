@@ -27,6 +27,7 @@ type PostProps = {
 export default function Post(props: any) {
   const post: PostProps = props;
   const [liked, setLiked] = useState(false)
+  const [disliked, setDisliked] = useState(false)
   const { ref: like, hovered: likeHovered } = useHover();
   const { ref: dislike, hovered: dislikeHovered } = useHover();
   return (
@@ -68,6 +69,7 @@ export default function Post(props: any) {
       {post.children}
       <Group spacing="xs" align="flex-end">
         <ActionIcon
+          component="div"
           variant="transparent"
           sx={(theme) => ({
             color:
@@ -77,6 +79,7 @@ export default function Post(props: any) {
             // borderColor: theme.colors.orange
           })}
           onClick={() => {
+            disliked && setDisliked(false)
             setLiked(!liked)
             post.onLiked()
           }}
@@ -86,12 +89,24 @@ export default function Post(props: any) {
         </ActionIcon>
         <Text component="span">{post.likeCount}</Text>
         <ActionIcon
+          component="div"
           variant="transparent"
           color={dislikeHovered ? "orange" : "gray"}
-          onClick={post.onDisliked}
+          sx={(theme) => ({
+            color:
+              dislikeHovered || disliked
+                ? theme.colors.orange[5]
+                : "none",
+            // borderColor: theme.colors.orange
+          })}
+          onClick={() => {
+            liked && setLiked(false)
+            setDisliked(!disliked)
+            post.onDisliked()
+          }}
           ref={dislike}
         >
-          <ThumbDown />
+          <ThumbDown fill={disliked ? "orange" : "none"}/>
         </ActionIcon>
         <Text component="span">{post.dislikeCount}</Text>
         <ActionIcon onClick={post.onClickReply}>

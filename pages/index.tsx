@@ -12,25 +12,25 @@ import {
   Button,
 } from "@mantine/core";
 import { useWindowScroll } from "@mantine/hooks";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowUp } from "tabler-icons-react";
 import HeadPart from "../layout/Header";
 import Intro from "../parts/Intro";
 import Post from "../parts/Post";
 
-
 export default function Home() {
   const [scroll, scrollTo] = useWindowScroll();
 
-  const [posts, setPosts ] = useState([
+  const [posts, setPosts] = useState([
     {
       id: 1,
       author: "ShrekTheThird",
       title: "Why am i lonely?",
       content:
-        "There is nothing to hide from here. Is it bad? Is it good? Nobody knows the answer. The system of this universe makes us felt something that lead to depressed.",
+        "There is nothing to hide in here. Is it bad? Is it good? Nobody knows the answer. The system of this universe makes us felt something that lead to depressed.",
       liked: false,
-        likeCount: 0,
+      disliked: false,
+      likeCount: 0,
       dislikeCount: 10,
       replyCount: 0,
     },
@@ -40,6 +40,7 @@ export default function Home() {
       title: "Do you guys knows about time relativity?",
       content: "I'm just confused, i mean what do you think about that?",
       liked: false,
+      disliked: false,
       likeCount: 5,
       dislikeCount: 1,
       replyCount: 2,
@@ -51,7 +52,8 @@ export default function Home() {
       content:
         "I never knew someone who never gives up, and someone who never let anybody down, also someone who never running around, and dessert anybody. Can someone find this person?",
       liked: false,
-        likeCount: 20,
+      disliked: false,
+      likeCount: 20,
       dislikeCount: 0,
       replyCount: 4,
     },
@@ -60,22 +62,31 @@ export default function Home() {
       author: "PickleRickNoob",
       title: "What is the funniest thing you've ever seen?",
       liked: false,
+      disliked: false,
       likeCount: 7,
       dislikeCount: 1,
       replyCount: 4,
     },
   ]);
 
-  const onLiked = (post: any) => {
+  const onReact = (
+    post: any,
+    reaction: "liked" | "disliked",
+    counterReaction: "liked" | "disliked",
+    reactionCount: "likeCount" | "dislikeCount",
+    counterReactionCount: "likeCount" | "dislikeCount"
+  ) => {
     const newPosts = [...posts];
-    newPosts.forEach(v => {
-      if(v.id == post.id){
-        v.liked = !v.liked
-        v.liked ? v.likeCount += 1 : v.likeCount -= 1 
+    newPosts.forEach((v) => {
+      if (v.id == post.id) {
+        v[reaction] = !v[reaction];
+        v[reaction] ? v[reactionCount] += 1 : v[reactionCount] -= 1
+        v[counterReaction] && (v[counterReactionCount] -= 1)
+        v[counterReaction] = false;
       }
     });
-    setPosts(newPosts)
-  }
+    setPosts(newPosts);
+  };
 
   return (
     <HeadPart title="PABLO">
@@ -89,8 +100,9 @@ export default function Home() {
                   author={post.author}
                   title={post.title}
                   likeCount={post.likeCount}
-                  onLiked={() => onLiked(post)}
+                  onLiked={() => onReact(post, 'liked', 'disliked', 'likeCount', 'dislikeCount')}
                   dislikeCount={post.dislikeCount}
+                  onDisliked={() => onReact(post, 'disliked', 'liked', 'dislikeCount', 'likeCount')}
                   replyCount={post.replyCount}
                 >
                   <Text my="sm">{post.content}</Text>
