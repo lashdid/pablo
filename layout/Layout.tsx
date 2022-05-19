@@ -5,7 +5,7 @@ import {
   Header
 } from "@mantine/core";
 
-export default function HeadPart(props: any) {
+export default function Layout(props: any) {
   const { title, children } = props;
   return (
     <AppShell

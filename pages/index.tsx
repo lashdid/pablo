@@ -1,22 +1,21 @@
 import {
   Text,
   Container,
-  Paper,
   Grid,
   Stack,
   Title,
-  Divider,
-  List,
   Affix,
   Transition,
   Button,
+  Modal,
 } from "@mantine/core";
 import { useWindowScroll } from "@mantine/hooks";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ArrowUp } from "tabler-icons-react";
-import HeadPart from "../layout/Header";
+import Layout from "../layout/Layout";
 import Intro from "../parts/Intro";
 import Post from "../parts/Post";
+import Reply from "../parts/Reply";
 
 export default function Home() {
   const [scroll, scrollTo] = useWindowScroll();
@@ -32,7 +31,7 @@ export default function Home() {
       disliked: false,
       likeCount: 0,
       dislikeCount: 10,
-      replyCount: 0,
+      replies: [],
     },
     {
       id: 2,
@@ -43,7 +42,18 @@ export default function Home() {
       disliked: false,
       likeCount: 5,
       dislikeCount: 1,
-      replyCount: 2,
+      replies: [
+        {
+          id: 1,
+          replier: "Boomer123",
+          text: "This is hard",
+        },
+        {
+          id: 2,
+          replier: "TheNeighborsKid",
+          text: "Well, go ask albert einstein",
+        },
+      ],
     },
     {
       id: 3,
@@ -55,7 +65,18 @@ export default function Home() {
       disliked: false,
       likeCount: 20,
       dislikeCount: 0,
-      replyCount: 4,
+      replies: [
+        {
+          id: 1,
+          replier: "Kicker45",
+          text: "LMAO, its rickroll",
+        },
+        {
+          id: 2,
+          replier: "Bot#123",
+          text: "This is deep",
+        },
+      ],
     },
     {
       id: 4,
@@ -65,31 +86,87 @@ export default function Home() {
       disliked: false,
       likeCount: 7,
       dislikeCount: 1,
-      replyCount: 4,
+      replies: [
+        {
+          id: 1,
+          replier: "Gamer69",
+          text: "Pickle rick, this is an old meme",
+        },
+        {
+          id: 2,
+          replier: "LolXD",
+          text: "IM PICKLE RIIIICK",
+        },
+        {
+          id: 3,
+          replier: "Idkwhy",
+          text: "LOL",
+        },
+      ],
     },
   ]);
 
-  const onReact = (
-    post: any,
-    reaction: "liked" | "disliked",
-    counterReaction: "liked" | "disliked",
-    reactionCount: "likeCount" | "dislikeCount",
-    counterReactionCount: "likeCount" | "dislikeCount"
-  ) => {
+  const [replyOpened, setReplyOpened] = useState(false);
+  const [replies, setReplies] = useState([{ id: 1, replier: "", text: "" }]);
+
+  type ReactionProps = {
+    id: number;
+    reaction: "liked" | "disliked";
+    counterReaction: "liked" | "disliked";
+    reactionCount: "likeCount" | "dislikeCount";
+    counterReactionCount: "likeCount" | "dislikeCount";
+  };
+
+  const onReact = (prop: ReactionProps) => {
     const newPosts = [...posts];
-    newPosts.forEach((v) => {
-      if (v.id == post.id) {
-        v[reaction] = !v[reaction];
-        v[reaction] ? v[reactionCount] += 1 : v[reactionCount] -= 1
-        v[counterReaction] && (v[counterReactionCount] -= 1)
-        v[counterReaction] = false;
+    for (let v of newPosts) {
+      if (v.id == prop.id) {
+        v[prop.reaction] = !v[prop.reaction];
+        v[prop.reaction]
+          ? (v[prop.reactionCount] += 1)
+          : (v[prop.reactionCount] -= 1);
+        v[prop.counterReaction] && (v[prop.counterReactionCount] -= 1);
+        v[prop.counterReaction] = false;
       }
-    });
+    }
     setPosts(newPosts);
   };
 
   return (
-    <HeadPart title="PABLO">
+    <Layout title="PABLO">
+      <Modal
+        size="lg"
+        centered
+        opened={replyOpened}
+        onClose={() => setReplyOpened(false)}
+        withCloseButton={false}
+      >
+        <Title order={3} my={5}>
+          <Text
+            variant="gradient"
+            gradient={{ from: "orange", to: "red" }}
+            inherit
+            component="span"
+          >
+            Replies
+          </Text>
+        </Title>
+        {replies.length > 0 ? (
+          <Grid grow>
+            <Grid.Col span={6}>
+              <Stack>
+                {replies.map((v) => (
+                  <Reply key={v.id} replier={v.replier} text={v.text} />
+                ))}
+              </Stack>
+            </Grid.Col>
+          </Grid>
+        ) : (
+          <Text size="xs" component="span" style={{ color: "gray" }}>
+            No Replies
+          </Text>
+        )}
+      </Modal>
       <Container size="md">
         <Grid grow>
           <Grid.Col span={6}>
@@ -100,10 +177,30 @@ export default function Home() {
                   author={post.author}
                   title={post.title}
                   likeCount={post.likeCount}
-                  onLiked={() => onReact(post, 'liked', 'disliked', 'likeCount', 'dislikeCount')}
+                  onLiked={() =>
+                    onReact({
+                      id: post.id,
+                      reaction: "liked",
+                      counterReaction: "disliked",
+                      reactionCount: "likeCount",
+                      counterReactionCount: "dislikeCount",
+                    })
+                  }
                   dislikeCount={post.dislikeCount}
-                  onDisliked={() => onReact(post, 'disliked', 'liked', 'dislikeCount', 'likeCount')}
-                  replyCount={post.replyCount}
+                  onDisliked={() =>
+                    onReact({
+                      id: post.id,
+                      reaction: "disliked",
+                      counterReaction: "liked",
+                      reactionCount: "dislikeCount",
+                      counterReactionCount: "likeCount"
+                    })
+                  }
+                  onClickReply={() => {
+                    setReplies(post.replies);
+                    setReplyOpened(true);
+                  }}
+                  replyCount={post.replies.length}
                 >
                   <Text my="sm">{post.content}</Text>
                 </Post>
@@ -129,6 +226,6 @@ export default function Home() {
           )}
         </Transition>
       </Affix>
-    </HeadPart>
+    </Layout>
   );
 }

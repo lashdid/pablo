@@ -19,7 +19,7 @@ type PostProps = {
   onLiked: () => {};
   dislikeCount: number;
   onDisliked: () => {};
-  replyCount: number;
+  replyCount: number
   onClickReply: () => {};
   children: ReactElement;
 };
