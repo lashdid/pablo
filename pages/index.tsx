@@ -8,10 +8,13 @@ import {
   Transition,
   Button,
   Modal,
+  Input,
+  Group,
+  ActionIcon,
 } from "@mantine/core";
 import { useWindowScroll } from "@mantine/hooks";
 import { useState } from "react";
-import { ArrowUp } from "tabler-icons-react";
+import { ArrowUp, Send } from "tabler-icons-react";
 import Layout from "../layout/Layout";
 import Intro from "../parts/Intro";
 import Post from "../parts/Post";
@@ -100,7 +103,22 @@ export default function Home() {
         {
           id: 3,
           replier: "Idkwhy",
-          text: "LOL",
+          text: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odit maxime, recusandae quidem vel nobis in enim cumque laudantium ab blanditiis!",
+        },
+        {
+          id: 4,
+          replier: "Idkwhy",
+          text: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odit maxime, recusandae quidem vel nobis in enim cumque laudantium ab blanditiis!",
+        },
+        {
+          id: 5,
+          replier: "Idkwhy",
+          text: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odit maxime, recusandae quidem vel nobis in enim cumque laudantium ab blanditiis!",
+        },
+        {
+          id: 6,
+          replier: "Idkwhy",
+          text: "Lorem ipsum dolor sit, amet consectetur adipisicing elit. Odit maxime, recusandae quidem vel nobis in enim cumque laudantium ab blanditiis!",
         },
       ],
     },
@@ -139,7 +157,6 @@ export default function Home() {
         centered
         opened={replyOpened}
         onClose={() => setReplyOpened(false)}
-        withCloseButton={false}
       >
         <Title order={3} my={5}>
           <Text
@@ -152,20 +169,22 @@ export default function Home() {
           </Text>
         </Title>
         {replies.length > 0 ? (
-          <Grid grow>
-            <Grid.Col span={6}>
-              <Stack>
-                {replies.map((v) => (
-                  <Reply key={v.id} replier={v.replier} text={v.text} />
-                ))}
-              </Stack>
-            </Grid.Col>
-          </Grid>
+          <div style={{height: '65vh', overflow: 'auto'}}>
+            <Stack>
+              {replies.map((v) => (
+                <Reply key={v.id} replier={v.replier} text={v.text} />
+              ))}
+            </Stack>
+          </div>
         ) : (
           <Text size="xs" component="span" style={{ color: "gray" }}>
             No Replies
           </Text>
         )}
+        <Group noWrap>
+          <Input my='sm' variant="default" placeholder="Reply this post" style={{width: '100%'}}/>
+          <ActionIcon variant="filled" color="orange"><Send size={16} /></ActionIcon>
+        </Group>
       </Modal>
       <Container size="md">
         <Grid grow>
