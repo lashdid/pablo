@@ -11,10 +11,11 @@ import {
   Input,
   Group,
   ActionIcon,
+  MediaQuery,
 } from "@mantine/core";
 import { useWindowScroll } from "@mantine/hooks";
 import { useState } from "react";
-import { ArrowUp, Send } from "tabler-icons-react";
+import { ArrowUp, Send, X } from "tabler-icons-react";
 import Layout from "../layout/Layout";
 import Intro from "../parts/Intro";
 import Post from "../parts/Post";
@@ -124,8 +125,10 @@ export default function Home() {
     },
   ]);
 
+  const [postId, setPostId] = useState(1);
   const [replyOpened, setReplyOpened] = useState(false);
   const [replies, setReplies] = useState([{ id: 1, replier: "", text: "" }]);
+  const [replyInput, setReplyInput] = useState("");
 
   type ReactionProps = {
     id: number;
@@ -150,26 +153,51 @@ export default function Home() {
     setPosts(newPosts);
   };
 
+  const onReply = () => {
+    if(replyInput != ""){
+      const newPosts = [...posts];
+      for (let v of newPosts) {
+        if (v.id == postId) {
+          v.replies.push({
+            id: Math.floor(Math.random()) * 9999,
+            replier: "DeadFace69",
+            text: replyInput,
+          });
+          setReplies(v.replies);
+        }
+      }
+      setPosts(newPosts);
+      setReplyInput("");
+    }
+  };
+
   return (
     <Layout title="PABLO">
       <Modal
+        zIndex={250}
         size="lg"
         centered
         opened={replyOpened}
         onClose={() => setReplyOpened(false)}
+        withCloseButton={false}
       >
-        <Title order={3} my={5}>
-          <Text
-            variant="gradient"
-            gradient={{ from: "orange", to: "red" }}
-            inherit
-            component="span"
-          >
-            Replies
-          </Text>
-        </Title>
+        <Grid justify="space-between" mb="sm">
+          <Title order={3} my={5}>
+            <Text
+              variant="gradient"
+              gradient={{ from: "orange", to: "red" }}
+              inherit
+              component="span"
+            >
+              Replies
+            </Text>
+          </Title>
+          <ActionIcon onClick={() => setReplyOpened(false)}>
+            <X />
+          </ActionIcon>
+        </Grid>
         {replies.length > 0 ? (
-          <div style={{height: '65vh', overflow: 'auto'}}>
+          <div style={{ height: "65vh", overflow: "auto" }}>
             <Stack>
               {replies.map((v) => (
                 <Reply key={v.id} replier={v.replier} text={v.text} />
@@ -182,8 +210,17 @@ export default function Home() {
           </Text>
         )}
         <Group noWrap>
-          <Input my='sm' variant="default" placeholder="Reply this post" style={{width: '100%'}}/>
-          <ActionIcon variant="filled" color="orange"><Send size={16} /></ActionIcon>
+          <Input
+            my="sm"
+            variant="default"
+            placeholder="Reply to this post"
+            style={{ width: "100%" }}
+            value={replyInput}
+            onInput={(e: any) => setReplyInput(e.target.value)}
+          />
+          <ActionIcon variant="filled" color="orange" onClick={onReply}>
+            <Send size={16} />
+          </ActionIcon>
         </Group>
       </Modal>
       <Container size="md">
@@ -212,10 +249,11 @@ export default function Home() {
                       reaction: "disliked",
                       counterReaction: "liked",
                       reactionCount: "dislikeCount",
-                      counterReactionCount: "likeCount"
+                      counterReactionCount: "likeCount",
                     })
                   }
                   onClickReply={() => {
+                    setPostId(post.id);
                     setReplies(post.replies);
                     setReplyOpened(true);
                   }}
@@ -226,9 +264,11 @@ export default function Home() {
               ))}
             </Stack>
           </Grid.Col>
-          <Grid.Col span={2}>
-            <Intro />
-          </Grid.Col>
+          <MediaQuery smallerThan="md" styles={{ display: "none" }}>
+            <Grid.Col span={2}>
+              <Intro />
+            </Grid.Col>
+          </MediaQuery>
         </Grid>
       </Container>
       <Affix position={{ bottom: 20, right: 20 }}>
