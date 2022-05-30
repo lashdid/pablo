@@ -12,12 +12,14 @@ import {
   Group,
   ActionIcon,
   MediaQuery,
+  Divider,
+  List,
 } from "@mantine/core";
 import { useWindowScroll } from "@mantine/hooks";
 import { useState } from "react";
 import { ArrowUp, Send, X } from "tabler-icons-react";
 import Layout from "../layout/Layout";
-import Intro from "../parts/Intro";
+import Panel from "../parts/Panel";
 import Post from "../parts/Post";
 import Reply from "../parts/Reply";
 
@@ -154,7 +156,7 @@ export default function Home() {
   };
 
   const onReply = () => {
-    if(replyInput != ""){
+    if (replyInput != "") {
       const newPosts = [...posts];
       for (let v of newPosts) {
         if (v.id == postId) {
@@ -172,7 +174,7 @@ export default function Home() {
   };
 
   return (
-    <Layout title="PABLO">
+    <>
       <Modal
         zIndex={250}
         size="lg"
@@ -266,7 +268,37 @@ export default function Home() {
           </Grid.Col>
           <MediaQuery smallerThan="md" styles={{ display: "none" }}>
             <Grid.Col span={2}>
-              <Intro />
+              <Panel>
+                <Title order={1}>
+                  <Text
+                    variant="gradient"
+                    gradient={{ from: "orange", to: "red" }}
+                    inherit
+                    component="span"
+                  >
+                    Welcome
+                  </Text>
+                </Title>
+                <Divider my="xs" />
+                <Text>Here you can post almost anything.</Text>
+                <List>
+                  <List.Item>Poll</List.Item>
+                  <List.Item>Video</List.Item>
+                  <List.Item>Audio</List.Item>
+                  <List.Item>Discussion</List.Item>
+                  <List.Item>Just Asking</List.Item>
+                </List>
+                <Button
+                  component="a"
+                  href="submit"
+                  variant="gradient"
+                  gradient={{ from: "orange", to: "red" }}
+                  mt="sm"
+                  style={{ width: "100%" }}
+                >
+                  Add Post
+                </Button>
+              </Panel>
             </Grid.Col>
           </MediaQuery>
         </Grid>
@@ -275,6 +307,8 @@ export default function Home() {
         <Transition transition="slide-up" mounted={scroll.y > 0}>
           {(transitionStyles) => (
             <Button
+              variant="gradient"
+              gradient={{ from: "orange", to: "red" }}
               leftIcon={<ArrowUp />}
               style={transitionStyles}
               color="orange"
@@ -285,6 +319,6 @@ export default function Home() {
           )}
         </Transition>
       </Affix>
-    </Layout>
+    </>
   );
 }
