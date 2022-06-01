@@ -28,7 +28,7 @@ async function getPosts(){
 }
 
 export default function Home() {
-  type PostProps = {
+  interface PostProps {
     id: number,
     author: string,
     title: string,
