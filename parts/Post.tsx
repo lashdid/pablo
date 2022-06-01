@@ -11,7 +11,7 @@ import {
 import { Messages, ThumbDown, ThumbUp } from "tabler-icons-react";
 import { ReactElement, useState } from "react";
 
-type PostProps = {
+interface PostProps {
   author: string;
   title: string;
   likeCount: number;
