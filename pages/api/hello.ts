@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-const posts = [{
+let posts = [{
   id: 1,
   author: "ShrekTheThird",
   title: "Why am i lonely?",
@@ -105,10 +105,20 @@ export default function handler(
   res: NextApiResponse
 ) {
   if(req.method === 'GET'){
-    console.log('you get something')
+    // do something please
   }
   if(req.method === 'POST'){
-    console.log('you post something')
+    posts = [{
+      id: req.body.id,
+      author: req.body.author,
+      title: req.body.title,
+      content: req.body.content,
+      liked: false,
+      disliked: false,
+      likeCount: 0,
+      dislikeCount: 0,
+      replies: [],
+    }, ...posts]
   }
   res.status(200).json(posts)
 }

@@ -11,11 +11,25 @@ import {
   Title,
   List,
 } from "@mantine/core";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import Panel from "../parts/Panel";
 
+async function addPosts(data: any) {
+  const req = await fetch("http://localhost:3000/api/hello", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  return await req.json();
+}
+
 export default function Submit() {
+  const router = useRouter()
   const [titleInput, setTitleInput] = useState("");
+  const [contentInput, setContentInput] = useState("");
   return (
     <Container size="md">
       <Grid grow>
@@ -28,11 +42,26 @@ export default function Submit() {
             onInput={(e: any) => setTitleInput(e.target.value)}
             required
           />
-          <Textarea placeholder="Description (optional)" minRows={5} autosize />
+          <Textarea
+            placeholder="Description (optional)"
+            onInput={(e: any) => setContentInput(e.target.value)}
+            minRows={5}
+            autosize
+          />
           <Button
             variant="gradient"
             gradient={{ from: "orange", to: "red" }}
             mt="sm"
+            onClick={() => {
+                addPosts({
+                  id: Math.floor(Math.random()) * 9999,
+                  author: "DeadFace69",
+                  title: titleInput,
+                  content: contentInput,
+                })
+                router.push('/')
+              }
+            }
           >
             Post
           </Button>
@@ -50,17 +79,15 @@ export default function Submit() {
                   Add Post
                 </Text>
               </Title>
-              <Divider my="xs"/>
-              <List >
-                <List.Item>
-                  View posts and pick up the latest topic
-                </List.Item>
+              <Divider my="xs" />
+              <List>
+                <List.Item>View posts and pick up the latest topic</List.Item>
                 <List.Item>Think what post will fit the topic</List.Item>
                 <List.Item>Write your opinion about that topic</List.Item>
                 <List.Item>Give it a little spice</List.Item>
                 <List.Item>Now you&apos;re ready to post</List.Item>
               </List>
-              <Divider my="xs"/>
+              <Divider my="xs" />
               <small>Not ready yet?</small>
               <Button
                 component="a"
