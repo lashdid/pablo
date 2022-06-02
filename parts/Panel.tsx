@@ -10,6 +10,7 @@ export default function Panel(props: any) {
             ? theme.colors.dark[6]
             : theme.colors.white,
       })}
+      style={{ position: 'sticky', top: '1rem'}}
     >
       {props.children}
     </Paper>
