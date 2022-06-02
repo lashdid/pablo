@@ -5,8 +5,11 @@ import {
   Header,
   Grid,
   Group,
-  Avatar
+  Avatar,
+  ActionIcon,
+  MediaQuery
 } from "@mantine/core";
+import { Plus } from "tabler-icons-react";
 
 export default function Layout(props: any) {
   const { title, children } = props;
@@ -36,6 +39,9 @@ export default function Layout(props: any) {
                 DeadFace69
               </Text>
               <Avatar radius="xl" />
+              <MediaQuery largerThan="md" styles={{display: 'none'}}>
+                <ActionIcon component="a" href="/submit" variant="filled" color='orange' radius='xl' size='lg'><Plus size={16} /></ActionIcon>
+              </MediaQuery>
             </Group>
           </Grid>
         </Header>
