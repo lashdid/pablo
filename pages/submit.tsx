@@ -16,7 +16,8 @@ import { useState } from "react";
 import Panel from "../parts/Panel";
 
 async function addPosts(data: any) {
-  const req = await fetch("http://localhost:3000/api/hello", {
+  const endpoint = process.env.API_ENDPOINT;
+  const req = await fetch(`${endpoint}/api/hello`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -27,9 +28,10 @@ async function addPosts(data: any) {
 }
 
 export default function Submit() {
-  const router = useRouter()
+  const router = useRouter();
   const [titleInput, setTitleInput] = useState("");
   const [contentInput, setContentInput] = useState("");
+  const [error, setError] = useState("");
   return (
     <Container size="md">
       <Grid grow>
@@ -40,6 +42,7 @@ export default function Submit() {
             label="Title"
             value={titleInput}
             onInput={(e: any) => setTitleInput(e.target.value)}
+            error={error}
             required
           />
           <Textarea
@@ -53,15 +56,18 @@ export default function Submit() {
             gradient={{ from: "orange", to: "red" }}
             mt="sm"
             onClick={() => {
+              if (titleInput === "") {
+                setError("Title is required");
+              } else {
                 addPosts({
-                  id: Math.floor(Math.random()) * 9999,
+                  id: Math.floor(Math.random() * 9999),
                   author: "DeadFace69",
                   title: titleInput,
                   content: contentInput,
-                })
-                router.push('/')
+                });
+                router.push("/");
               }
-            }
+            }}
           >
             Post
           </Button>
@@ -69,7 +75,7 @@ export default function Submit() {
         <MediaQuery smallerThan="md" styles={{ display: "none" }}>
           <Grid.Col span={2}>
             <Panel>
-              <Title order={1}>
+              <Title order={2}>
                 <Text
                   variant="gradient"
                   gradient={{ from: "orange", to: "red" }}

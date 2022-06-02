@@ -23,7 +23,8 @@ import Post from "../parts/Post";
 import Reply from "../parts/Reply";
 
 async function getPosts(){
-  const req = await fetch('http://localhost:3000/api/hello')
+  const endpoint = process.env.API_ENDPOINT
+  const req = await fetch(`${endpoint}/api/hello`)
   return await req.json()
 }
 
@@ -61,7 +62,7 @@ export default function Home() {
   const [replies, setReplies] = useState([{ id: 1, replier: "", text: "" }]);
   const [replyInput, setReplyInput] = useState("");
 
-  type ReactionProps = {
+  interface ReactionProps {
     id: number;
     reaction: "liked" | "disliked";
     counterReaction: "liked" | "disliked";
@@ -90,7 +91,7 @@ export default function Home() {
       for (let v of newPosts) {
         if (v.id == postId) {
           v.replies.push({
-            id: Math.floor(Math.random()) * 9999,
+            id: Math.floor(Math.random() * 9999),
             replier: "DeadFace69",
             text: replyInput,
           });
@@ -111,6 +112,7 @@ export default function Home() {
         opened={replyOpened}
         onClose={() => setReplyOpened(false)}
         withCloseButton={false}
+        styles={{inner: {overflow: 'hidden'}}}
       >
         <Grid justify="space-between" mb="sm">
           <Title order={3} my={5}>
@@ -154,7 +156,7 @@ export default function Home() {
           </ActionIcon>
         </Group>
       </Modal>
-      <Container size="md">
+      <Container size="md" mb='4rem'>
         <Grid grow>
           <Grid.Col span={6}>
             <Stack>
