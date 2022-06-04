@@ -2,7 +2,6 @@ import {
   Grid,
   MediaQuery,
   Container,
-  Input,
   Textarea,
   TextInput,
   Button,
@@ -17,14 +16,26 @@ import Panel from "../parts/Panel";
 
 async function addPosts(data: any) {
   const endpoint = process.env.API_ENDPOINT;
-  const req = await fetch(`${endpoint}/api/hello`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-  return await req.json();
+  const id = Math.floor(Math.random() * 9999)
+  Promise.all([
+    fetch(`${endpoint}/api/posts`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({id: id, ...data}),
+    }),
+    fetch(`${endpoint}/api/post/replies`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        change: 'add-post',
+        id: id
+      }),
+    })
+  ])
 }
 
 export default function Submit() {
@@ -60,7 +71,6 @@ export default function Submit() {
                 setError("Title is required");
               } else {
                 addPosts({
-                  id: Math.floor(Math.random() * 9999),
                   author: "DeadFace69",
                   title: titleInput,
                   content: contentInput,
