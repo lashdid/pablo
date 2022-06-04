@@ -2,7 +2,7 @@
 A simple social media without someone controlling you.
 
 ### What does that mean?
-This means that if you post here, your post will never be deleted ( maybe ) except by yourself. You can post anything here for absolutely free, because its for community.
+This means that if you post here, your post will never be deleted ( maybe ) except by yourself. You can post anything here without any rules, because its for community.
 
 *if someone is interested with this thing.*
 
