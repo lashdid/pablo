@@ -15,52 +15,92 @@ import {
   Divider,
   List,
 } from "@mantine/core";
-import { useWindowScroll } from "@mantine/hooks";
-import { useEffect, useState } from "react";
+import { useForceUpdate, useSetState, useWindowScroll } from "@mantine/hooks";
+import { useCallback, useEffect, useState } from "react";
 import { ArrowUp, Send, X } from "tabler-icons-react";
 import Panel from "../parts/Panel";
 import Post from "../parts/Post";
 import Reply from "../parts/Reply";
 
-async function getPosts(){
-  const endpoint = process.env.API_ENDPOINT
-  const req = await fetch(`${endpoint}/api/hello`)
-  return await req.json()
+async function getPosts() {
+  const endpoint = process.env.API_ENDPOINT;
+  const req = await fetch(`${endpoint}/api/posts`);
+  return await req.json();
+}
+
+async function addReply(id: number, data: any) {
+  const endpoint = process.env.API_ENDPOINT;
+  Promise.all([
+    fetch(`${endpoint}/api/post/replies?id=${id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    }),
+    fetch(`${endpoint}/api/posts`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        change: "reply-counter",
+        id: id,
+      }),
+    }),
+  ]);
 }
 
 export default function Home() {
   interface PostProps {
-    id: number,
-    author: string,
-    title: string,
-    content:
-      string,
-    liked: boolean,
-    disliked: boolean,
-    likeCount: number,
-    dislikeCount: number,
-    replies: [{
-      id: number,
-      replier: string,
-      text: string
-    }],
+    id: number;
+    author: string;
+    title: string;
+    content: string;
+    liked: boolean;
+    disliked: boolean;
+    likeCount: number;
+    dislikeCount: number;
+    replyCount: number;
+    replies: [
+      {
+        id: number;
+        replier: string;
+        text: string;
+      }
+    ];
   }
+
   
   const [posts, setPosts] = useState<PostProps[]>([]);
 
   useEffect(() => {
     getPosts().then((res) => {
-      setPosts(res)
-    })
-  }, [])
+      setPosts(res);
+    });
+  });
 
   const [scroll, scrollTo] = useWindowScroll();
 
-
   const [postId, setPostId] = useState(1);
   const [replyOpened, setReplyOpened] = useState(false);
+  const [replyLoaded, setReplyLoaded] = useState(false);
   const [replies, setReplies] = useState([{ id: 1, replier: "", text: "" }]);
   const [replyInput, setReplyInput] = useState("");
+
+  const getReplies = useCallback(async () => {
+    setReplyLoaded(false);
+    const endpoint = process.env.API_ENDPOINT;
+    const req = await fetch(`${endpoint}/api/post/replies?id=${postId}`);
+    const data = await req.json();
+    setReplies(data.replies);
+    setReplyLoaded(true);
+  }, [postId]);
+
+  //get and set reply modal by postid
+  useEffect(() => {
+    getReplies();
+  }, [getReplies]);
 
   interface ReactionProps {
     id: number;
@@ -68,6 +108,11 @@ export default function Home() {
     counterReaction: "liked" | "disliked";
     reactionCount: "likeCount" | "dislikeCount";
     counterReactionCount: "likeCount" | "dislikeCount";
+  }
+
+  const onClickReply = (id: number) => {
+    setPostId(id);
+    setReplyOpened(true);
   };
 
   const onReact = (prop: ReactionProps) => {
@@ -87,18 +132,12 @@ export default function Home() {
 
   const onReply = () => {
     if (replyInput != "") {
-      const newPosts = [...posts];
-      for (let v of newPosts) {
-        if (v.id == postId) {
-          v.replies.push({
-            id: Math.floor(Math.random() * 9999),
-            replier: "DeadFace69",
-            text: replyInput,
-          });
-          setReplies(v.replies);
-        }
-      }
-      setPosts(newPosts);
+      addReply(postId, {
+        id: Math.floor(Math.random() * 9999),
+        replier: "DeadFace69",
+        text: replyInput,
+      });
+      getReplies();
       setReplyInput("");
     }
   };
@@ -112,7 +151,7 @@ export default function Home() {
         opened={replyOpened}
         onClose={() => setReplyOpened(false)}
         withCloseButton={false}
-        styles={{inner: {overflow: 'hidden'}}}
+        styles={{ inner: { overflow: "hidden" } }}
       >
         <Grid justify="space-between" mb="sm">
           <Title order={3} my={5}>
@@ -129,17 +168,23 @@ export default function Home() {
             <X />
           </ActionIcon>
         </Grid>
-        {replies.length > 0 ? (
-          <div style={{ height: "65vh", overflow: "auto" }}>
-            <Stack>
-              {replies.map((v) => (
-                <Reply key={v.id} replier={v.replier} text={v.text} />
-              ))}
-            </Stack>
-          </div>
+        {replyLoaded ? (
+          replies.length > 0 ? (
+            <div style={{ height: "65vh", overflow: "auto" }}>
+              <Stack>
+                {replies.map((v) => (
+                  <Reply key={v.id} replier={v.replier} text={v.text} />
+                ))}
+              </Stack>
+            </div>
+          ) : (
+            <Text size="xs" component="span" style={{ color: "gray" }}>
+              No Replies
+            </Text>
+          )
         ) : (
           <Text size="xs" component="span" style={{ color: "gray" }}>
-            No Replies
+            Loading...
           </Text>
         )}
         <Group noWrap>
@@ -156,7 +201,7 @@ export default function Home() {
           </ActionIcon>
         </Group>
       </Modal>
-      <Container size="md" mb='4rem'>
+      <Container size="md" mb="4rem">
         <Grid grow>
           <Grid.Col span={6}>
             <Stack>
@@ -185,12 +230,8 @@ export default function Home() {
                       counterReactionCount: "likeCount",
                     })
                   }
-                  onClickReply={() => {
-                    setPostId(post.id);
-                    setReplies(post.replies);
-                    setReplyOpened(true);
-                  }}
-                  replyCount={post.replies.length}
+                  onClickReply={() => onClickReply(post.id)}
+                  replyCount={post.replyCount}
                 >
                   <Text my="sm">{post.content}</Text>
                 </Post>
