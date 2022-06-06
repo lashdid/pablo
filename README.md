@@ -1,3 +1,5 @@
+### The website is under maintenance
+
 # PABLO
 A simple social media without someone controlling you.
 
@@ -17,4 +19,4 @@ Well, it depends.
 This is why i said its exactly like 4chan. Its anonymous.
 
 ### Why i made this?
-To learn how to use NextJS and Mantine UI.
+To learn how to use NextJS and Mantine UI also MongoDB.
