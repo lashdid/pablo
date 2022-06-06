@@ -14,7 +14,7 @@ import Reply from "./Reply";
 
 
 interface ReplyProps {
-  id: number;
+  _id: string;
   replier: string;
   text: string;
 }
@@ -61,7 +61,7 @@ export default function ReplyModal(props: any) {
           <div style={{ height: "65vh", overflow: "auto" }}>
             <Stack>
               {modal.replies.map((v) => (
-                <Reply key={v.id} replier={v.replier} text={v.text} />
+                <Reply key={v._id} replier={v.replier} text={v.text} />
               ))}
             </Stack>
           </div>
