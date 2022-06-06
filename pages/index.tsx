@@ -36,7 +36,7 @@ async function getPosts() {
 
 export default function Home() {
   interface PostProps {
-    _id: number;
+    _id: string;
     author: string;
     title: string;
     content: string;
@@ -44,6 +44,7 @@ export default function Home() {
     disliked: boolean;
     like_count: number;
     dislike_count: number;
+    replies_id: string
     reply_count: number;
     replies: [
       {
@@ -60,39 +61,36 @@ export default function Home() {
     getPosts().then((res) => {
       setPosts(res);
     });
-  });
+  }, []);
 
-  const [postId, setPostId] = useState(1);
+  const [postId, setPostId] = useState("");
   const [replyOpened, setReplyOpened] = useState(false);
   const [replyLoaded, setReplyLoaded] = useState(false);
   const [replies, setReplies] = useState([{ id: 1, replier: "", text: "" }]);
   const [replyInput, setReplyInput] = useState("");
 
-  // const getReplies = useCallback(async () => {
-  //   setReplyLoaded(false);
-  //   const endpoint = process.env.API_ENDPOINT;
-  //   const req = await fetch(`${endpoint}/api/post/replies?id=${postId}`);
-  //   const data = await req.json();
-  //   setReplies(data.replies);
-  //   setReplyLoaded(true);
-  // }, [postId]);
+  const getReplies = async (id: string) => {
+    setReplyLoaded(false);
+    const endpoint = process.env.API_ENDPOINT;
+    const req = await fetch(`${endpoint}/api/post/replies?id=${id}`);
+    const data = await req.json();
+    setReplies(data.replies);
+    setReplyLoaded(true);
+  };
 
   //get and set reply modal by postid
-  // useEffect(() => {
-  //   getReplies();
-  // }, [getReplies]);
 
   interface ReactionProps {
-    id: number;
+    id: string;
     reaction: "liked" | "disliked";
     counterReaction: "liked" | "disliked";
     reactionCount: "like_count" | "dislike_count";
     counterReactionCount: "like_count" | "dislike_count";
   }
 
-  const onClickReply = (id: number) => {
-    setPostId(id);
+  const onClickReply = (id: string) => {
     setReplyOpened(true);
+    getReplies(id)
   };
 
   const onReact = (prop: ReactionProps) => {
@@ -163,7 +161,7 @@ export default function Home() {
                       counterReactionCount: "like_count",
                     })
                   }
-                  onClickReply={() => onClickReply(post._id)}
+                  onClickReply={() => onClickReply(post.replies_id)}
                   replyCount={post.reply_count}
                 >
                   <Text my="sm">{post.content}</Text>

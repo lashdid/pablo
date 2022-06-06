@@ -23,18 +23,8 @@ async function addPosts(data: any) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({id: id, ...data}),
+      body: JSON.stringify(data),
     }),
-    fetch(`${endpoint}/api/post/replies`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        change: 'add-post',
-        id: id
-      }),
-    })
   ])
 }
 
