@@ -1,5 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import { ObjectId } from "mongodb";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { connect } from "../../../lib/dbConnect";
 
 let postReplies = [
   {
@@ -73,11 +75,15 @@ let postReplies = [
   },
 ];
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "GET") {
     if (req.query.id) {
-      const replies = postReplies.find((v) =>  v.id.toString() == req.query.id);
-      replies ? res.status(200).json(replies) : res.status(404).send("Not Found")
+      const { db } = await connect();
+
+      const replies = await db.collection("replies")
+      .findOne({_id: new ObjectId(`${req.query.id}`)})
+
+      res.status(200).json(replies);
     }
     else{
       res.status(404).send("Not Found");

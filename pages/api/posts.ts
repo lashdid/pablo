@@ -1,4 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import { ObjectId } from "mongodb";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { connect } from "../../lib/dbConnect";
 
@@ -111,38 +112,29 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const { db } = await connect();
   if (req.method === "GET") {
-    const { db } = await connect();
-
-    const posts = await db.collection("posts")
-    .find()
-    .toArray();
-
+    const posts = await db.collection("posts").find().sort({ $natural: -1 }).toArray();
     res.status(200).json(posts);
   }
   if (req.method === "POST") {
-    if (req.body.change === "reply-counter") {
-      posts.forEach((post) => {
-        if (post.id == req.body.id) {
-          post.replyCount += 1;
-        }
-      });
-    } else {
-      posts = [
-        {
-          id: req.body.id,
-          author: req.body.author,
-          title: req.body.title,
-          content: req.body.content,
-          liked: false,
-          disliked: false,
-          likeCount: 0,
-          dislikeCount: 0,
-          replyCount: 0,
-          replies: [],
-        },
-        ...posts,
-      ];
+    const replyData: {_id?: ObjectId, replies: []} = {
+      replies: []
     }
+    db.collection("replies").insertOne(replyData, (err) => {
+      if(err) return;
+      const postData = {
+        author: req.body.author,
+        title: req.body.title,
+        content: req.body.content,
+        liked: false,
+        disliked: false,
+        dislike_count: 0,
+        like_count: 0,
+        replies_id: replyData._id,
+        reply_count: 0,
+      };
+      db.collection("posts").insertOne(postData)
+    })
   }
 }
