@@ -26,6 +26,7 @@ interface ModalProps {
   replyInput: string,
   setReplyOpened: (setOpened: boolean) => {}
   setReplyInput: (setInput: string) => {}
+  onReply: () => {}
 }
 
 export default function ReplyModal(props: any) {
@@ -84,7 +85,7 @@ export default function ReplyModal(props: any) {
           value={modal.replyInput}
           onInput={(e: any) => modal.setReplyInput(e.target.value)}
         />
-        <ActionIcon variant="filled" color="orange">
+        <ActionIcon variant="filled" color="orange" onClick={modal.onReply}>
           <Send size={16} />
         </ActionIcon>
       </Group>
