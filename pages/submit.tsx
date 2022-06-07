@@ -16,16 +16,13 @@ import Panel from "../parts/Panel";
 
 async function addPosts(data: any) {
   const endpoint = process.env.API_ENDPOINT;
-  const id = Math.floor(Math.random() * 9999)
-  Promise.all([
-    fetch(`${endpoint}/api/posts`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    }),
-  ])
+  await fetch(`${endpoint}/api/posts`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
 }
 
 export default function Submit() {

@@ -11,63 +11,51 @@ async function getPosts() {
   return await req.json();
 }
 
-// async function addReply(id: number, data: any) {
-//   const endpoint = process.env.API_ENDPOINT;
-//   Promise.all([
-//     fetch(`${endpoint}/api/post/replies?id=${id}`, {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify(data),
-//     }),
-//     fetch(`${endpoint}/api/posts`, {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify({
-//         change: "reply-counter",
-//         id: id,
-//       }),
-//     }),
-//   ]);
-// }
+async function addReply(id: string, data: any){
+  const endpoint = process.env.API_ENDPOINT;
+  await fetch(`${endpoint}/api/post/replies?id=${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+}
+
+interface PostProps {
+  _id: string;
+  post_date: string;
+  author: string;
+  title: string;
+  content: string;
+  liked: boolean;
+  disliked: boolean;
+  like_count: number;
+  dislike_count: number;
+  replies_id: string
+  reply_count: number;
+  replies: [
+    {
+      id: number;
+      replier: string;
+      text: string;
+    }
+  ];
+}
 
 export default function Home() {
-  interface PostProps {
-    _id: string;
-    author: string;
-    title: string;
-    content: string;
-    liked: boolean;
-    disliked: boolean;
-    like_count: number;
-    dislike_count: number;
-    replies_id: string
-    reply_count: number;
-    replies: [
-      {
-        id: number;
-        replier: string;
-        text: string;
-      }
-    ];
-  }
-
   const [posts, setPosts] = useState<PostProps[]>([]);
+  const [repliesId, setRepliesId] = useState("");
+  const [replyOpened, setReplyOpened] = useState(false);
+  const [replyLoaded, setReplyLoaded] = useState(false);
+  const [replies, setReplies] = useState([{ id: 1, replier: "", text: "" }]);
+  const [replyInput, setReplyInput] = useState("");
 
   useEffect(() => {
     getPosts().then((res) => {
       setPosts(res);
     });
-  }, []);
-
-  const [postId, setPostId] = useState("");
-  const [replyOpened, setReplyOpened] = useState(false);
-  const [replyLoaded, setReplyLoaded] = useState(false);
-  const [replies, setReplies] = useState([{ id: 1, replier: "", text: "" }]);
-  const [replyInput, setReplyInput] = useState("");
+  }, [replies]);
 
   const getReplies = async (id: string) => {
     setReplyLoaded(false);
@@ -78,8 +66,6 @@ export default function Home() {
     setReplyLoaded(true);
   };
 
-  //get and set reply modal by postid
-
   interface ReactionProps {
     id: string;
     reaction: "liked" | "disliked";
@@ -88,8 +74,9 @@ export default function Home() {
     counterReactionCount: "like_count" | "dislike_count";
   }
 
-  const onClickReply = (id: string) => {
+  const onClickModal = (id: string) => {
     setReplyOpened(true);
+    setRepliesId(id)
     getReplies(id)
   };
 
@@ -108,17 +95,16 @@ export default function Home() {
     setPosts(newPosts);
   };
 
-  // const onReply = () => {
-  //   if (replyInput != "") {
-  //     addReply(postId, {
-  //       id: Math.floor(Math.random() * 9999),
-  //       replier: "DeadFace69",
-  //       text: replyInput,
-  //     });
-  //     getReplies();
-  //     setReplyInput("");
-  //   }
-  // };
+  const onReply = () => {
+    if(replyInput != "" && repliesId){
+      addReply(repliesId, {
+        replier: "DeadFace69",
+        text: replyInput,
+      });
+      getReplies(repliesId)
+      setReplyInput("");
+    }
+  };
 
   return (
     <>
@@ -129,7 +115,8 @@ export default function Home() {
           replyLoaded,
           replyOpened,
           setReplyInput,
-          setReplyOpened
+          setReplyOpened,
+          onReply
         }}
       />
       <Container size="md" mb="4rem">
@@ -139,6 +126,7 @@ export default function Home() {
               {posts.map((post) => (
                 <Post
                   key={post._id}
+                  postDate={post.post_date}
                   author={post.author}
                   title={post.title}
                   likeCount={post.like_count}
@@ -161,7 +149,7 @@ export default function Home() {
                       counterReactionCount: "like_count",
                     })
                   }
-                  onClickReply={() => onClickReply(post.replies_id)}
+                  onClickReply={() => onClickModal(post.replies_id)}
                   replyCount={post.reply_count}
                 >
                   <Text my="sm">{post.content}</Text>

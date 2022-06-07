@@ -75,32 +75,36 @@ let postReplies = [
   },
 ];
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === "GET") {
-    if (req.query.id) {
-      const { db } = await connect();
-
-      const replies = await db.collection("replies")
-      .findOne({_id: new ObjectId(`${req.query.id}`)})
-
-      res.status(200).json(replies);
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  const { db } = await connect();
+  if (req.query.id) {
+    const repliesData = db.collection("replies");
+    const postsData = db.collection("posts");
+    switch (req.method) {
+      case "GET":
+        const replies = await repliesData.findOne({
+          _id: new ObjectId(`${req.query.id}`),
+        });
+        res.status(200).json(replies);
+        break;
+      case "PUT":
+        repliesData.updateOne(
+          { _id: new ObjectId(`${req.query.id}`) },
+          { $push: { replies: { _id: new ObjectId(), ...req.body } } },
+          async (err) => {
+            if (err) return;
+            await postsData.updateOne(
+              { replies_id: new ObjectId(`${req.query.id}`) },
+              { $inc: { reply_count: 1 } }
+            );
+          }
+        );
+        res.status(200)
     }
-    else{
-      res.status(404).send("Not Found");
-    }
-  }
-  if (req.method === "POST") {
-    if(req.body.change === 'add-post'){
-      postReplies = [{
-        id: req.body.id,
-        replies: []
-      }, ...postReplies]
-    }else{
-      postReplies.forEach((v) => {
-        if(v.id.toString() == req.query.id){
-          v.replies.push(req.body)
-        }
-      })
-    }
+  } else {
+    res.status(404).send("Not Found");
   }
 }
