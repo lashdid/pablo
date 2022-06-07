@@ -13,21 +13,31 @@ import { ReactElement, useState } from "react";
 
 interface PostProps {
   author: string;
+  postDate: string;
   title: string;
   likeCount: number;
   liked: boolean;
   onLiked: () => {};
   dislikeCount: number;
   onDisliked: () => {};
-  replyCount: number
+  replyCount: number;
   onClickReply: () => {};
   children: ReactElement;
-};
+}
+
+function parseDate(dateString: string) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-Us", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
 
 export default function Post(props: any) {
   const post: PostProps = props;
-  const [liked, setLiked] = useState(false)
-  const [disliked, setDisliked] = useState(false)
+  const [liked, setLiked] = useState(false);
+  const [disliked, setDisliked] = useState(false);
   const { ref: like, hovered: likeHovered } = useHover();
   const { ref: dislike, hovered: dislikeHovered } = useHover();
   return (
@@ -36,9 +46,7 @@ export default function Post(props: any) {
       p="md"
       sx={(theme) => ({
         backgroundColor:
-          theme.colorScheme === "dark"
-            ? theme.colors.dark[6]
-            : "none",
+          theme.colorScheme === "dark" ? theme.colors.dark[6] : "none",
         // borderColor: theme.colors.orange
       })}
       withBorder
@@ -54,6 +62,7 @@ export default function Post(props: any) {
         >
           {post.author}
         </Text>
+        {" "}on {parseDate(post.postDate)}
       </Text>
       <Title order={3} my={5}>
         <Text
@@ -72,20 +81,17 @@ export default function Post(props: any) {
           component="div"
           variant="transparent"
           sx={(theme) => ({
-            color:
-              likeHovered || liked
-                ? theme.colors.orange[5]
-                : "none",
+            color: likeHovered || liked ? theme.colors.orange[5] : "none",
             // borderColor: theme.colors.orange
           })}
           onClick={() => {
-            disliked && setDisliked(false)
-            setLiked(!liked)
-            post.onLiked()
+            disliked && setDisliked(false);
+            setLiked(!liked);
+            post.onLiked();
           }}
           ref={like}
         >
-          <ThumbUp fill={liked ? "orange" : "none"}/>
+          <ThumbUp fill={liked ? "orange" : "none"} />
         </ActionIcon>
         <Text component="span">{post.likeCount}</Text>
         <ActionIcon
@@ -93,20 +99,17 @@ export default function Post(props: any) {
           variant="transparent"
           color={dislikeHovered ? "orange" : "gray"}
           sx={(theme) => ({
-            color:
-              dislikeHovered || disliked
-                ? theme.colors.orange[5]
-                : "none",
+            color: dislikeHovered || disliked ? theme.colors.orange[5] : "none",
             // borderColor: theme.colors.orange
           })}
           onClick={() => {
-            liked && setLiked(false)
-            setDisliked(!disliked)
-            post.onDisliked()
+            liked && setLiked(false);
+            setDisliked(!disliked);
+            post.onDisliked();
           }}
           ref={dislike}
         >
-          <ThumbDown fill={disliked ? "orange" : "none"}/>
+          <ThumbDown fill={disliked ? "orange" : "none"} />
         </ActionIcon>
         <Text component="span">{post.dislikeCount}</Text>
         <ActionIcon onClick={post.onClickReply}>
