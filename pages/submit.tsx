@@ -9,9 +9,14 @@ import {
   Text,
   Title,
   List,
+  Paper,
+  ActionIcon,
+  Space,
 } from "@mantine/core";
+import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { X } from "tabler-icons-react";
 import Panel from "../parts/Panel";
 
 async function addPosts(data: any) {
@@ -22,14 +27,20 @@ async function addPosts(data: any) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
-  })
+  });
 }
 
 export default function Submit() {
   const router = useRouter();
   const [titleInput, setTitleInput] = useState("");
   const [contentInput, setContentInput] = useState("");
+  const [files, setFiles] = useState<File[]>([]);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    console.log(files);
+  }, [files]);
+
   return (
     <Container size="md">
       <Grid grow>
@@ -43,16 +54,87 @@ export default function Submit() {
             error={error}
             required
           />
+          <Paper
+            sx={(theme) => ({
+              backgroundColor:
+                theme.colorScheme === "dark"
+                  ? theme.colors.dark[6]
+                  : theme.colors.white,
+            })}
+          >
+            <Dropzone
+              onDrop={(dataFiles) => {
+                const mockFiles = [...files];
+                mockFiles.push(...dataFiles);
+                setFiles(mockFiles);
+              }}
+              onReject={(files) =>
+                alert("File type is not supported or file is too big")
+              }
+              maxSize={3 * 1024 ** 2}
+              accept={IMAGE_MIME_TYPE}
+              mb="sm"
+            >
+              {(status) => (
+                <>
+                  <Text color="gray">
+                    <small>Click or drop file here to upload (optional)</small>
+                  </Text>
+                </>
+              )}
+            </Dropzone>
+            {files.length != 0 && (
+              <div
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  padding: "0 .5rem .5rem .5rem",
+                }}
+              >
+                {files.map((file) => {
+                  return (
+                    <Paper
+                      key={file.lastModified}
+                      style={{ display: "flex", alignContent: "center" }}
+                      m={2}
+                      px={5}
+                      py={2}
+                    >
+                      <Text lineClamp={1} size="sm">
+                        {file.name.length > 20
+                          ? file.name.slice(0, 20) + "..."
+                          : file.name}
+                      </Text>
+                      <ActionIcon
+                        size="xs"
+                        ml="sm"
+                        onClick={() => {
+                          const mockFiles = [...files];
+                          const filtered = mockFiles.filter(
+                            (v) => v.lastModified != file.lastModified
+                          );
+                          setFiles(filtered);
+                        }}
+                      >
+                        <X />
+                      </ActionIcon>
+                    </Paper>
+                  );
+                })}
+              </div>
+            )}
+          </Paper>
+          <Space h="md" />
           <Textarea
             placeholder="Description (optional)"
             onInput={(e: any) => setContentInput(e.target.value)}
             minRows={5}
             autosize
           />
+          <Space h="md" />
           <Button
             variant="gradient"
             gradient={{ from: "orange", to: "red" }}
-            mt="sm"
             onClick={() => {
               if (titleInput === "") {
                 setError("Title is required");
@@ -68,6 +150,17 @@ export default function Submit() {
           >
             Post
           </Button>
+          <MediaQuery largerThan="md" styles={{ display: "none" }}>
+            <Button
+              ml="sm"
+              component="a"
+              variant="outline"
+              color="gray"
+              href="/"
+            >
+              Back
+            </Button>
+          </MediaQuery>
         </Grid.Col>
         <MediaQuery smallerThan="md" styles={{ display: "none" }}>
           <Grid.Col span={2}>
