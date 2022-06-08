@@ -1,6 +1,8 @@
 import { useHover } from "@mantine/hooks";
 import {
   ActionIcon,
+  Anchor,
+  Button,
   Divider,
   Grid,
   Group,
@@ -53,15 +55,13 @@ export default function Post(props: any) {
     >
       <Text component="span" size="xs" color="grey">
         Posted by{" "}
-        <Text
-          variant="link"
+        <Anchor
           size="xs"
-          component="a"
           href="#"
           style={{ color: "gray" }}
         >
           {post.author}
-        </Text>
+        </Anchor>
         {" "}on {parseDate(post.postDate)}
       </Text>
       <Title order={3} my={5}>
@@ -77,7 +77,7 @@ export default function Post(props: any) {
       <Divider />
       {post.children}
       <Group spacing="xs" align="flex-end">
-        <ActionIcon
+        {/* <ActionIcon
           component="div"
           variant="transparent"
           sx={(theme) => ({
@@ -111,11 +111,10 @@ export default function Post(props: any) {
         >
           <ThumbDown fill={disliked ? "orange" : "none"} />
         </ActionIcon>
-        <Text component="span">{post.dislikeCount}</Text>
-        <ActionIcon onClick={post.onClickReply}>
-          <Messages />
-        </ActionIcon>
-        <Text component="span">{post.replyCount}</Text>
+        <Text component="span">{post.dislikeCount}</Text> */}
+        <Button variant="subtle" color="gray" leftIcon={<Messages />} onClick={post.onClickReply} pl={5}>
+          {post.replyCount} {" "} Replies
+        </Button>
       </Group>
     </Paper>
   );
