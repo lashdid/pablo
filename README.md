@@ -1,5 +1,5 @@
-# PABLO
-A simple social media with anonymous login system (still working on it).
+# PABLO ( in progress )
+A simple social media with anonymous login system.
 
 ### What does that mean?
 This means that you don't need to login using anything. Just enter your name and password then BOOM you created an account.
