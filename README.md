@@ -1,6 +1,6 @@
 # PABLO
 A simple social media with anonymous login system. **( In progress )**
-> :warning: I'm not gonna continue this project. So this project is dead.
+> :warning: I'm not gonna continue this project. So this project is dead. RIP.
 
 ### What does that mean?
 This means that you don't need to login using anything. Just enter your username and password then BOOM you created an account.
