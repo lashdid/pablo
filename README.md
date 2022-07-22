@@ -1,5 +1,5 @@
 # PABLO
-A simple social media with anonymous login system. **( In progress )**
+A simple social media with anonymous login system. **( RIP )**
 > :warning: I'm not gonna continue this project. So this project is dead. RIP.
 
 ### What does that mean?
