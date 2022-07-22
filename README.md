@@ -9,7 +9,7 @@ This means that you don't need to login using anything. Just enter your username
 Well, it depends.
 
 ### How to log in?
-You need to remember your username and password, it can't be recovered. **( In progress )**
+You need to remember your username and password, it can't be recovered. **( Not finished )**
 
 ### Why i made this?
 To learn how to use NextJS and Mantine UI also MongoDB.
